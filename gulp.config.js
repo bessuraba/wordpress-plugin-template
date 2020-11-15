@@ -29,6 +29,11 @@ module.exports = {
 			precision: 10,
 			outputName: 'admin-' + PLUGIN_NAME + '.css',
 			destination: './admin/css/'
+		},
+		js: {
+			src: './admin/js/src/**/*.js',
+			destination: './admin/js/',
+			outputName: 'admin-' + PLUGIN_NAME
 		}
 	},
 	public: {
@@ -39,10 +44,19 @@ module.exports = {
 			precision: 10,
 			outputName: 'public-' + PLUGIN_NAME + '.css',
 			destination: './public/css/'
+		},
+		js: {
+			src: './public/js/src/**/*.js',
+			destination: './public/js/',
+			outputName: 'public-' + PLUGIN_NAME
 		}
 	},
 	watch: {
-		css: './**/*.scss'
+		css: './**/*.scss',
+		js: [
+			'./admin/js/src/**/*.js',
+			'./public/js/src/**/*.js'
+		]
 	},
 	package: {
 		src: [
@@ -52,6 +66,7 @@ module.exports = {
 			// './assets/images/*.jpg',
 			// './assets/fonts/*',
 			'./admin/css/admin-' + PLUGIN_NAME + '.min.css',
+			'./public/css/public-' + PLUGIN_NAME + '.min.css'
 		],
 		destination: './packaged',
 		name: PLUGIN_NAME

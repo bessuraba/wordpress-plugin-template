@@ -4,3 +4,5 @@
 /packaged/
 /admin/css/**.css
 /public/css/**.css
+/admin/js/*.js
+/public/js/*.js

@@ -13,6 +13,9 @@ const rename = require('gulp-rename');
 const minifycss = require('gulp-uglifycss');
 const clean = require('gulp-clean');
 const zip = require('gulp-zip');
+const babel = require('gulp-babel');
+const remember = require('gulp-remember');
+const uglify = require('gulp-uglify');
 
 const errorHandler = r => {
 	notify.onError( '\n\n❌  ===> ERROR: <%= error.message %>\n' )( r );
@@ -67,6 +70,23 @@ gulp.task('admin-css', () => {
     return task;
 });
 
+gulp.task('admin-js', () => {
+	return gulp
+		.src(config.admin.js.src, { since: gulp.lastRun( 'admin-js' ) })
+		.pipe(plumber(errorHandler))
+		.pipe(
+			babel({ presets: [[ '@babel/preset-env', { targets: { browsers: config.BROWSERS_LIST }}]] })
+		)
+		.pipe(remember(config.admin.js.src))
+		.pipe(concat(config.admin.js.outputName + '.js'))
+		.pipe(lineec())
+		.pipe(rename({ basename: config.admin.js.outputName, suffix: '.min' }))
+		.pipe(uglify())
+		.pipe(lineec())
+		.pipe(gulp.dest( config.admin.js.destination ))
+		.pipe(notify({ message: '\n\n✅  ===> admin scripts — completed!\n', onLast: true }));
+});
+
 gulp.task('public-css', () => {
     const task = gulp
         .src(config.public.css.src, { passthrough: true })
@@ -98,6 +118,23 @@ gulp.task('public-css', () => {
     return task;
 });
 
+gulp.task('public-js', () => {
+	return gulp
+		.src(config.public.js.src, { since: gulp.lastRun( 'public-js' ) })
+		.pipe(plumber(errorHandler))
+		.pipe(
+			babel({ presets: [[ '@babel/preset-env', { targets: { browsers: config.BROWSERS_LIST }}]] })
+		)
+		.pipe(remember(config.public.js.src))
+		.pipe(concat(config.public.js.outputName + '.js'))
+		.pipe(lineec())
+		.pipe(rename({ basename: config.public.js.outputName, suffix: '.min' }))
+		.pipe(uglify())
+		.pipe(lineec())
+		.pipe(gulp.dest( config.public.js.destination ))
+		.pipe(notify({ message: '\n\n✅  ===> public scripts — completed!\n', onLast: true }));
+});
+
 gulp.task('package', gulp.series(
     () => {
         return gulp
@@ -105,7 +142,7 @@ gulp.task('package', gulp.series(
             .pipe(clean())
             .pipe( notify({ message: '\n\n✅  ===> cleaning packaged — completed!\n', onLast: true }) );
     },
-    gulp.parallel('admin-css', 'public-css'),
+    gulp.parallel('admin-css', 'public-css', 'admin-js', 'public-js'),
     () => {
         return gulp
             .src( config.package.src, { base: './' } )
@@ -120,6 +157,7 @@ gulp.task('package', gulp.series(
     }
 ))
 
-gulp.task('default', gulp.series('admin-css', 'public-css', browsersync, () => {
+gulp.task('default', gulp.series('admin-css', 'public-css', 'admin-js', 'public-js', browsersync, () => {
     gulp.watch(config.watch.css, gulp.series('admin-css', 'public-css', reload));
+    gulp.watch(config.watch.js, gulp.series('admin-js', 'public-js', reload));
 }));
