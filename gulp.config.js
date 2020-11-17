@@ -66,7 +66,9 @@ module.exports = {
 			// './assets/images/*.jpg',
 			// './assets/fonts/*',
 			'./admin/css/admin-' + PLUGIN_NAME + '.min.css',
-			'./public/css/public-' + PLUGIN_NAME + '.min.css'
+			'./public/css/public-' + PLUGIN_NAME + '.min.css',
+			'./admin/js/admin-' + PLUGIN_NAME + '.min.js',
+			'./public/js/public-' + PLUGIN_NAME + '.min.js',
 		],
 		destination: './packaged',
 		name: PLUGIN_NAME
